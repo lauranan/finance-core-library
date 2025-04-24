@@ -1,0 +1,8 @@
+bash
+CopyEdit
+__pycache__/
+*.pyc
+*.log
+.env/
+my-env/
+.DS_Store
