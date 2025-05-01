@@ -21,7 +21,9 @@ This is a lightweight core finance library for computing common financial metric
 
 
 ## Getting Started
-To run tests, use:
+To set up dependency, use:
+pip install -r requirements.txt
+To run tests, from root directory finance-core-library use:
 python -m unittest tests/test_<module>.py
 To run functions, use:
 python -m finance_core.<module> <input>
