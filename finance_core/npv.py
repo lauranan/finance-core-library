@@ -33,7 +33,7 @@ def parse_percentage(percent_str):
 
 def main():
     if len(sys.argv) < 4:
-        print("Usage: python npv_calculator.py <initial_investment> <cash_flows_comma_separated> <rate>")
+        print("Usage: python npv.py <initial_investment> <cash_flows_comma_separated> <rate>")
         sys.exit(1)
 
     # Parse inputs from command line
