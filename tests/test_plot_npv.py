@@ -1,0 +1,9 @@
+import unittest
+from finance_core.irr import getIRR
+from finance_core.plot_npv import plot_npv_curve
+
+class TestPlotNpv(unittest.TestCase):
+    def test1(self):
+        trueIRR = getIRR([-100, 20, 50, 40, -10, 5])
+        testIRR = plot_npv_curve(cashflows=[-100, 20, 50, 40, -10, 5], return_irr=True)
+        self.assertAlmostEqual(trueIRR, testIRR, places=2)
