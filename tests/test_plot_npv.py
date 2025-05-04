@@ -7,3 +7,6 @@ class TestPlotNpv(unittest.TestCase):
         trueIRR = getIRR([-100, 20, 50, 40, -10, 5])
         testIRR = plot_npv_curve(cashflows=[-100, 20, 50, 40, -10, 5], return_irr=True)
         self.assertAlmostEqual(trueIRR, testIRR, places=2)
+    def test_no_irr(self):
+        result = plot_npv_curve([-100, -50, -30, -10], return_irr=True)
+        self.assertIsNone(result)

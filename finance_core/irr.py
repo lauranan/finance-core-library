@@ -100,8 +100,7 @@ def irr_bisection(cash_flows, tol=1e-6, max_iter=1000):
 def getIRR(cash_flows):
     irr = npf.irr(cash_flows)
     if np.isnan(irr):
-        print("IRR calculation failed: No real solution")
-        sys.exit(1)
+        raise ValueError("IRR calculation failed: No real solution")
     else: 
         return npf.irr(cash_flows)
 
@@ -125,7 +124,11 @@ def main():
     
    
     # Call IRR function
-    result = getIRR(cash_flows)
+    try:
+        result = getIRR(cash_flows)
+    except ValueError as e:
+        print(e)
+        sys.exit(1)
 
     # Print the result
     print(f"IRR: {result:.6f}")

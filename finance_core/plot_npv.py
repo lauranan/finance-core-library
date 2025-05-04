@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt
 import numpy as np
 from .npv import getNPV
+from .irr import getIRR
 import argparse
 import sys
 
@@ -19,17 +20,29 @@ def plot_npv_curve(cashflows:list[float], rate_min:float=-0.5, rate_max:float=0.
         Displays a matplotlib plot showing NPV vs. discount rate and highlights approximate IRR.
         Saves the matplotlib plot silently if save_path indicated.
     """
+
+    #gets the dataset, handle irr non-existent exception
     rates = np.linspace(rate_min, rate_max, steps)
     npvs = [getNPV(cashflows, rate) for rate in rates]
-    irr_ind = np.argmin(np.abs(npvs))
+    try:
+        irr = getIRR(cashflows)
+    except ValueError:
+        irr = None
+
+    #plots dataset
     plt.plot(rates, npvs, label="NPV Curve")
-    plt.axhline(0, color='gray', linestyle='--', label=f"IRR approx.: {rates[irr_ind]:.2f}")
+    if irr:
+        plt.axhline(0, color='gray', linestyle='--', label=f"IRR approx.: {irr:.2f} ")
+    else:
+        plt.plot([], [], ' ', label="No IRR found")
     plt.title("NPV vs. Discount Rate")
     plt.xlabel("Discount Rate")
     plt.ylabel("NPV ($)")
     plt.legend()
     plt.grid(True)
     plt.tight_layout()
+
+    #save image
     if save_path:
         try:
             plt.savefig(save_path)
@@ -39,8 +52,9 @@ def plot_npv_curve(cashflows:list[float], rate_min:float=-0.5, rate_max:float=0.
     else:
         plt.show()
 
+    #return irr
     if return_irr == True:
-        return rates[irr_ind]
+        return irr
     
 
 def main():

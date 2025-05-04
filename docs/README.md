@@ -1,13 +1,17 @@
 # Finance Core Library
 
-This is a lightweight core finance library for computing common financial metrics like Net Present Value (NPV) and Internal Rate of Return (IRR). The goal is to build a solid foundation for financial computation with test coverage, modularity, and educational clarity.
+This is a lightweight core finance library for computing and plotting common financial metrics like Net Present Value (NPV) and Internal Rate of Return (IRR). The goal is to build a solid foundation for financial computation with test coverage, modularity, and educational clarity.
 
 ## Features
 
-- `getNPV(cashflows, discount_rate)`: Computes Net Present Value.
-- `getIRR(cashflows)`: Estimates Internal Rate of Return using numerical methods.
-- `plot_npv_curve(cashflow, OPTIONAL)`: Plots NPV curve using matplot, optional arguments available.
-- Modular design with testable components.
+- `getNPV(cashflows, discount_rate)`: Computes Net Present Value via formula
+- `npf_getNPV(cashflows, discount_rate)`: Computes Net Present Value via numpy_financial
+- `getIRR(cashflows)`: Estimates Internal Rate of Return via numpy_financial.
+- `irr_bisection(cashflows, ...)`: Estimates Internal Rate of Return via bisection.
+- `irr_newton_raphson(cashflows, ...)`: Estimates Internal Rate of Return via Newton-Raphson method.
+- `plot_npv_curve(cashflow, ...)`: Plots NPV vs. Discount Rate with optional IRR annotation and save-to-file.
+- Command-line interface with flags like `--rate_min`, `--save_path`, and `--return_irr`.
+- Built for education, modularity, and public showcase (with full test coverage). 
 
 ## Structure
 
@@ -22,15 +26,40 @@ This is a lightweight core finance library for computing common financial metric
 - `docs/`: Project documentation and finance notes
   - `README.md`: this file.
 
-
 ## Getting Started
-To set up dependency, use:
-pip install -r requirements.txt
-To run tests, from root directory finance-core-library use:
+1. To set up dependency, use:
+`pip install -r requirements.txt`
+2. To run tests, use:
 python -m unittest tests/test_<module>.py
-To run functions, use:
+or simply run all test:
+python -m unittest discover tests
+3. To run functions, use:
 python -m finance_core.<module> <input>
 
-## Author
+## Usage
 
-Laura Nan - Work in Progress. This repository accompanies a structured learning journey toward mastering Quantitative Finance.
+Run from the project root using the `-m` flag.
+
+### Plotting NPV
+
+python -m finance_core.plot_npv -100 50 30 40 --return_irr --save_path npv_plot.png
+
+Arguments:
+  <cashflows> (required): A list of cashflows, e.g. -1000 500 400
+  --rate_min: Minimum discount rate to plot (default: -0.5)
+  --rate_max: Maximum discount rate to plot (default: 0.5)
+  --steps: Number of steps to evaluate NPV curve (default: 100)
+  --return_irr: Print estimated IRR
+  --save_path: Save plot to file instead of displaying
+
+### Running IRR Calculation
+
+python -m finance_core.irr "-1000,300,500,200"
+
+### Running NPV Calculation
+
+python -m finance_core.npv -100 50 30 40 15%
+
+## Author
+Laura Nan - Work in Progress. 
+This project is part of a structured self-study journey toward Quantitative & Computational Finance. It emphasizes mastery through implementation, testing, and real-world modeling scenarios.
