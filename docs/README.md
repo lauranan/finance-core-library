@@ -1,5 +1,8 @@
 # Finance Core Library
 
+![Python](https://img.shields.io/badge/python-3.13+-blue)
+![License](https://img.shields.io/github/license/lauranan/finance-core-library)
+
 This is a lightweight core finance library for computing and plotting common financial metrics like Net Present Value (NPV) and Internal Rate of Return (IRR). The goal is to build a solid foundation for financial computation with test coverage, modularity, and educational clarity.
 
 ## Features
@@ -27,14 +30,17 @@ This is a lightweight core finance library for computing and plotting common fin
   - `README.md`: this file.
 
 ## Getting Started
-1. To set up dependency, use:
-`pip install -r requirements.txt`
-2. To run tests, use:
-python -m unittest tests/test_<module>.py
-or simply run all test:
-python -m unittest discover tests
-3. To run functions, use:
-python -m finance_core.<module> <input>
+1. To set up dependency, use:  
+ `pip install -r requirements.txt`
+
+2. To run tests, use:  
+ `python -m unittest tests/test_<module>.py`  
+ or simply run all tests:  
+ `python -m unittest discover tests`
+
+3. To run functions, use:  
+`python -m finance_core.<module> <input>`
+
 
 ## Usage
 
@@ -44,13 +50,18 @@ Run from the project root using the `-m` flag.
 
 python -m finance_core.plot_npv -100 50 30 40 --return_irr --save_path npv_plot.png
 
-Arguments:
-  <cashflows> (required): A list of cashflows, e.g. -1000 500 400
-  --rate_min: Minimum discount rate to plot (default: -0.5)
-  --rate_max: Maximum discount rate to plot (default: 0.5)
-  --steps: Number of steps to evaluate NPV curve (default: 100)
-  --return_irr: Print estimated IRR
-  --save_path: Save plot to file instead of displaying
+#### Arguments:  
+
+- `<cashflows>` (required): A list of cashflows, e.g. -1000 500 400  
+- `--rate_min`: Minimum discount rate to plot (default: -0.5)  
+- `--rate_max`: Maximum discount rate to plot (default: 0.5)  
+- `--steps`: Number of steps to evaluate NPV curve (default: 100)  
+- `--return_irr`: Print estimated IRR  
+- `--save_path`: Save plot to file instead of displaying  
+- `--compare`: Plot a secondary curve with a differents set of cashflow to compare with.
+
+![NPV Plot Example](./sample_npv_curve.png)  
+![NPV Compare Plot Example](./sample_compare_npv_curve.png)  
 
 ### Running IRR Calculation
 
