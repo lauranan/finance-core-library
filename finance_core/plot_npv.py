@@ -1,15 +1,17 @@
 from matplotlib import pyplot as plt
+from collections import namedtuple
 import numpy as np
 from .npv import getNPV
 from .irr import getIRR
 import argparse
 import sys
 
+PlotResult = namedtuple("PlotResult", ["irr", "irr2", "npvs", "npvs2", "rates"])
+
 def plot_npv_curve(cashflows:list[float], 
                    rate_min:float=-0.5, 
                    rate_max:float=0.5, 
                    steps:int=100, 
-                   return_irr:bool=False, 
                    save_path:str=None, 
                    cashflows2:list[float]=None):
     """
@@ -56,7 +58,6 @@ def plot_npv_curve(cashflows:list[float],
     if cashflows2:
         npvs2 = [getNPV(cashflows2, rate) for rate in rates]
         try:
-            print("tried")
             irr2 = getIRR(cashflows2)
         except ValueError:
             irr2 = None
@@ -78,11 +79,14 @@ def plot_npv_curve(cashflows:list[float],
     else:
         plt.show()
 
-    #return irr
-    if return_irr == True:
-        if cashflows2 is not None:
-            return irr, irr2
-        else: return irr, None
+
+    return PlotResult(
+    irr=irr,
+    irr2=irr2 if cashflows2 else None,
+    npvs=npvs,
+    npvs2=npvs2 if cashflows2 else None,
+    rates=rates
+)
     
 
 def main():
@@ -106,17 +110,16 @@ def main():
     parser.add_argument("--compare", nargs="+", type=float, help="Cashflows to compare with, space-separated (e.g. -100 50 50)" )
     args = parser.parse_args()
 
-    irr, irr2 = plot_npv_curve(cashflows=args.cashflows, 
+    result = plot_npv_curve(cashflows=args.cashflows, 
                    rate_min=args.rate_min, 
                    rate_max=args.rate_max, 
                    steps=args.steps,
-                   return_irr=args.return_irr,
                    save_path=args.save_path,
                    cashflows2=args.compare)
     if args.return_irr:
-        print(f"IRR: {irr:.3f}") if irr is not None else print("No primary IRR found.")
+        print(f"IRR: {result.irr:.3f}") if result.irr is not None else print("No primary IRR found.")
         if args.compare:
-            print(f"IRR: {irr2:.3f}") if irr2 is not None else print("No compare IRR found.")
+            print(f"IRR2: {result.irr2:.3f}") if result.irr2 is not None else print("No compare IRR found.")
     
 
 if __name__ == "__main__":
