@@ -4,16 +4,19 @@ import numpy as np
 from .npv import getNPV
 from .irr import getIRR
 import argparse
+import json
 import sys
 
-PlotResult = namedtuple("PlotResult", ["irr", "irr2", "npvs", "npvs2", "rates"])
+PlotResult = namedtuple("PlotResult", ["irr", "irr2", "npvs", "npvs2", "rates", "json_dict"])
 
 def plot_npv_curve(cashflows:list[float], 
                    rate_min:float=-0.5, 
                    rate_max:float=0.5, 
                    steps:int=100, 
                    save_path:str=None, 
-                   cashflows2:list[float]=None):
+                   cashflows2:list[float]=None,
+                   return_json:str=None
+                   ):
     """
     Plot NPV curve against discount rate using matplotlib.
 
@@ -78,14 +81,25 @@ def plot_npv_curve(cashflows:list[float],
         plt.close()
     else:
         plt.show()
-
+    
+    if return_json:
+        json_dict = {
+            "irr": irr,
+            "rates": rates.tolist(),
+            "npv1": npvs,
+            "irr2": irr2,
+            "rates": rates.tolist(),
+            "npv2": npvs2
+        }
+    else: json_dict = None
 
     return PlotResult(
     irr=irr,
     irr2=irr2 if cashflows2 else None,
     npvs=npvs,
     npvs2=npvs2 if cashflows2 else None,
-    rates=rates
+    rates=rates,
+    json_dict=json_dict
 )
     
 
@@ -108,6 +122,7 @@ def main():
     parser.add_argument("--return_irr", action='store_true', help="return irr value, default false")
     parser.add_argument("--save_path", type=str, default=None, help="save the plot to path, default None")
     parser.add_argument("--compare", nargs="+", type=float, help="Cashflows to compare with, space-separated (e.g. -100 50 50)" )
+    parser.add_argument("--save_json", type=str, default=None, help="save curve data to path, default None")
     args = parser.parse_args()
 
     result = plot_npv_curve(cashflows=args.cashflows, 
@@ -115,12 +130,16 @@ def main():
                    rate_max=args.rate_max, 
                    steps=args.steps,
                    save_path=args.save_path,
-                   cashflows2=args.compare)
+                   cashflows2=args.compare,
+                   return_json=args.save_json is not None)
     if args.return_irr:
         print(f"IRR: {result.irr:.3f}") if result.irr is not None else print("No primary IRR found.")
         if args.compare:
             print(f"IRR2: {result.irr2:.3f}") if result.irr2 is not None else print("No compare IRR found.")
     
+    if args.save_json is not None:
+        with open(args.save_json, "w") as f:
+            json.dump(result.json_dict, f, indent=2)
 
 if __name__ == "__main__":
     main()

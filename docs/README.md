@@ -60,8 +60,14 @@ python -m finance_core.plot_npv -100 50 30 40 --return_irr --save_path npv_plot.
 - `--save_path`: Save plot to file instead of displaying  
 - `--compare`: Plot a secondary curve with a differents set of cashflow to compare with.
 
+#### Sample Plots
+Plot one cashflow:
 ![NPV Plot Example](./sample_npv_curve.png)  
-![NPV Compare Plot Example](./sample_compare_npv_curve.png)  
+
+Compare two sets of cashflows visually:
+![NPV Compare Plot](./test_compare_plot.png)
+
+
 
 ### Running IRR Calculation
 
