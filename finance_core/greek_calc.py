@@ -28,22 +28,16 @@ def black_scholes_greeks(s, k, t, sigma, r, option_type):
     phi_d1 = norm.pdf(d1)
 
     if option_type == "call":
-        price = s * norm_d1 - k * math.exp(-r * t) * norm_d2
-    else:
-        price = k * math.exp(-r * t) * norm.cdf(-d2) - s * norm.cdf(-d1)
-    
-    if option_type == "call":
+        price = s * norm_d1 - k * np.exp(-r * t) * norm_d2
         delta = norm_d1
-    else:
+        theta = -(s * phi_d1 * sigma) / (2 * sqrtT) - r * k * np.exp(-r * t) * norm_d2
+    else:  # put
+        price = k * np.exp(-r * t) * norm.cdf(-d2) - s * norm.cdf(-d1)
         delta = norm_d1 - 1
+        theta = -(s * phi_d1 * sigma) / (2 * sqrtT) + r * k * np.exp(-r * t) * norm.cdf(-d2)
 
-    gamma = phi_d1/(s * sigma * sqrtT)
-    vega = s * phi_d1 *sqrtT
-
-    if option_type == "call":
-        theta = -s * phi_d1 * sigma/ (2 * sqrtT) - r * k * math.exp(-r * t) * norm_d2
-    else:
-        theta = -s * phi_d1 * sigma / (2 * sqrtT) + r * k * math.exp(-r * t) * norm.cdf(-d2) 
+    gamma = phi_d1 / (s * sigma * sqrtT)
+    vega  = s * phi_d1 * sqrtT
 
     return greeks(
         price=price,
@@ -58,7 +52,7 @@ def plot_curve(args):
 
     #get plot spts
     center = args.S
-    span = 1/2 * max(args.K, args.S)
+    span = 0.5 * max(args.K, args.S)
     s_min = max(0, center - span)
     s_max = center + span
     spots = np.arange(s_min, s_max + args.step, args.step)
@@ -80,7 +74,7 @@ def plot_curve(args):
     vega = [data.vega for data in dataset]
     theta = [data.theta for data in dataset]
 
-    fig, ax_price = plt.subplots(figsize=(8, 5))
+    fig, ax_price = plt.subplots()
     ax_price.set_xlabel("Spot price")
     ax_price.set_title(f"{args.type.capitalize()} option (K={args.K}, T={args.t}y, σ={args.sigma}, r={args.r})")
     
@@ -96,16 +90,23 @@ def plot_curve(args):
         "vega":  (vega,  "red"),
         "theta": (theta, "purple"),
     }
-
-    greek_name = "delta"
-    data, col = greek_map[greek_name]
-    ax_greek = ax_price.twinx()
-    ax_greek.plot(spots, data, label=greek_name.capitalize(), color=col, linestyle="--")
-    ax_greek.set_ylabel(greek_name.capitalize(), color=col)
-    ax_greek.tick_params(axis='y', labelcolor=col)
-    ax_greek.spines['right'].set_position(("axes", 1 + 0.1 * list(args.plot).index(greek_name)))
-
-    plt.show()
+    for greek_name in args.plot:
+        if greek_name == "price":
+            continue
+        data, col = greek_map[greek_name]
+        ax_greek = ax_price.twinx()
+        ax_greek.plot(spots, data, label=greek_name.capitalize(), color=col, linestyle="--")
+        ax_greek.set_ylabel(greek_name.capitalize(), color=col)
+        ax_greek.tick_params(axis='y', labelcolor=col)
+        ax_greek.spines.right.set_position(("axes", 1 + 0.08 * (args.plot.index(greek_name)-1)))
+    if args.save_path:
+        try:
+            plt.savefig(args.save_path)
+        except:
+            print(f"the path: {args.save_path} is invalid, unable to save, please recheck.")
+        plt.close()
+    else:
+        plt.show()
 
 if __name__ == "__main__":
 
@@ -126,7 +127,7 @@ if __name__ == "__main__":
 
     #optional plot argument
     parser.add_argument("--step", type=float, default=1.0, help="spot-grid step size (default 1)")
-    parser.add_argument("--save", action="store_true", default=False, help="save plot to PNG instead of showing GUI")
+    parser.add_argument("--save_path", type=str, default=None, help="save the plot to path, default None")
 
     args = parser.parse_args()
 
@@ -140,6 +141,6 @@ if __name__ == "__main__":
     print(f"Delta : {result.delta:.4e}")
     print(f"Gamma : {result.gamma:.4e}")
     print(f"Vega  : {result.vega:.4e}")
-    print(f"Theta : {result.theta/365:.4e}  per day")
-
+    print(f"Theta : {result.theta/365:.4e}  per DAY")
+    print(f"Theta : {result.theta:.4e}  per YEAR")
     plot_curve(args)
