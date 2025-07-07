@@ -55,8 +55,8 @@ def irr_newton_raphson(cash_flows: list[float],rate:float=0.1, tol:float=1e-6, m
         #if NPV within tolerance, return current rate as IRR.
         NPV_deriv = getNPVderiv(cash_flows, rate) 
         
-        if NPV_deriv == 0: #if the derivative yields 0, we are falling into a plain or pit, not converging toward either direction
-                raise ZeroDivisionError("Derivative is zero. No convergence.")
+        if abs(NPV_deriv) < 1e-12:
+            rate_next = rate + 1e-2 # small nudge
         
         try:
             rate_next = rate - NPV/NPV_deriv #use N-R formula to calculate next rate guess.
