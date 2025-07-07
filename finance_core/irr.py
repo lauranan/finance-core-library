@@ -5,7 +5,7 @@ import numpy as np
 import time
 from .npv import getNPV
 
-def test_IRR():
+def test_irr():
     assert(round(irr_bisection([-1000, 300, 700, -100, 400]), 6) == round(getIRR([-1000, 300, 700, -100, 400]), 6) )
     assert(round(irr_newton_raphson(cash_flows=[-1000, 300, 700, 100, 400], rate=0.193), 6) == round(getIRR([-1000, 300, 700, 100, 400]), 6) )
 def getNPVderiv(cashflows:list[float], rate:float):
@@ -54,10 +54,10 @@ def irr_newton_raphson(cash_flows: list[float],rate:float=0.1, tol:float=1e-6, m
             return rate
         #if NPV within tolerance, return current rate as IRR.
         NPV_deriv = getNPVderiv(cash_flows, rate) 
-        '''
+        
         if NPV_deriv == 0: #if the derivative yields 0, we are falling into a plain or pit, not converging toward either direction
                 raise ZeroDivisionError("Derivative is zero. No convergence.")
-        '''
+        
         try:
             rate_next = rate - NPV/NPV_deriv #use N-R formula to calculate next rate guess.
         except:
@@ -104,13 +104,10 @@ def getIRR(cash_flows):
     else: 
         return npf.irr(cash_flows)
 
-def main():
+if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python irr.py list<cash_flows>")
         sys.exit(1)
-
-    # Parse inputs from command line
-    
 
     #get cash_flows as a list
     try: 
@@ -121,18 +118,10 @@ def main():
     except Exception:
         print("Format error: cash flows must be a list of numbers, e.g. [100, 200, 300]")
         sys.exit(1)
-    
    
     # Call IRR function
-    try:
-        result = getIRR(cash_flows)
-    except ValueError as e:
-        print(e)
-        sys.exit(1)
+    result = getIRR(cash_flows)
+
 
     # Print the result
     print(f"IRR: {result:.6f}")
-
-if __name__ == "__main__":
-    test_IRR()
-    main()
